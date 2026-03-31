@@ -124,7 +124,7 @@ function ParameterControls() {
             min={5} max={50} step={1}
             className="w-full"
           />
-          <p className="text-xs text-muted-foreground mt-1">Annual sports investment level</p>
+          <p className="text-xs text-muted-foreground mt-1">Diminishing returns above €25M — Lithuania already spends €10.7/capita (2x Slovenia)</p>
         </div>
 
         {/* Coaching Quality */}

@@ -42,9 +42,15 @@ export function calculateMedals(params: SimParams): number {
   // Russia/Belarus ban
   if (params.russiaBan) medals += 0.5;
 
-  // Funding above €20M
-  if (params.governmentFunding > 20) {
-    medals += (params.governmentFunding - 20) * 0.05;
+  // Funding effect: logarithmic diminishing returns (Bernard & Busse Cobb-Douglas model)
+  // Lithuania already spends €10.7/capita (€30M) — nearly 2x Slovenia's €7.9/capita
+  // Below €15M: underfunded penalty. €15-25M: sweet spot. Above €25M: diminishing returns.
+  if (params.governmentFunding < 15) {
+    medals -= (15 - params.governmentFunding) * 0.06; // underfunding penalty
+  } else {
+    // Log curve: first €10M above 15 matters most, then diminishes sharply
+    medals += Math.log2(Math.max(1, params.governmentFunding - 14)) * 0.2;
+    // Cap: spending above €35M adds virtually nothing for a 2.8M population
   }
 
   // Coaching quality > 7

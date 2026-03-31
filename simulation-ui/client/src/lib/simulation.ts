@@ -9,6 +9,8 @@ export interface SimParams {
   rowingDepth: number;
   hostEffect: number;
   simulationRounds: number;
+  competitiveFieldStrength: number; // 1-10: how strong rivals are (10 = toughest year ever)
+  socialMediaEffect: number; // -5 to +5: net social media impact (negative = pressure/toxicity, positive = boost/endorsement motivation)
 }
 
 export const defaultParams: SimParams = {
@@ -22,6 +24,8 @@ export const defaultParams: SimParams = {
   rowingDepth: 3,
   hostEffect: 3,
   simulationRounds: 100,
+  competitiveFieldStrength: 7, // 2025 discus field is historically deep (5 men 70m+)
+  socialMediaEffect: 1, // Slight net positive: Lithuania athletes have modest social profiles, less toxic exposure
 };
 
 export function calculateMedals(params: SimParams): number {
@@ -63,6 +67,17 @@ export function calculateMedals(params: SimParams): number {
   // Host effect
   medals -= params.hostEffect * 0.05;
 
+  // Competitive field strength: stronger rivals = fewer medals for Lithuania
+  // At field=5 (average), neutral. Below 5 = weaker field (bonus). Above 5 = stronger field (penalty).
+  // Based on head-to-head dynamics: 2025 discus had first-ever 5-man 70m+ competition
+  medals -= (params.competitiveFieldStrength - 5) * 0.15;
+
+  // Social media effect: research shows 72% of elite athletes report heightened anxiety
+  // under media scrutiny (Kristiansen et al.), but endorsement motivation can boost by 2-3%.
+  // Negative = toxic pressure (choking under pressure, Beilock & Carr 2001)
+  // Positive = endorsement motivation + fan energy boost
+  medals += params.socialMediaEffect * 0.08;
+
   return Math.round(Math.max(0, Math.min(10, medals)));
 }
 
@@ -81,6 +96,11 @@ export interface SportPrediction {
 }
 
 export function calculateSportPredictions(params: SimParams): SportPrediction[] {
+  // Competitive field modifier: stronger field reduces medal probabilities across all sports
+  const fieldModifier = 1 - ((params.competitiveFieldStrength - 5) * 0.04); // range: 0.8 to 1.2
+  // Social media modifier: positive = confidence boost, negative = choking risk
+  const socialModifier = 1 + (params.socialMediaEffect * 0.015); // range: 0.925 to 1.075
+
   const aleknaBase = params.aleknaForm === "World Record Form" ? 95
     : params.aleknaForm === "Strong" ? 85
     : params.aleknaForm === "Average" ? 55
@@ -92,7 +112,7 @@ export function calculateSportPredictions(params: SimParams): SportPrediction[] 
     {
       sport: "Discus Throw",
       icon: "🥏",
-      medalProb: Math.min(99, Math.round(aleknaBase * (0.5 + readinessFactor * 0.5) * (0.6 + coachFactor * 0.4))),
+      medalProb: Math.min(99, Math.round(aleknaBase * (0.5 + readinessFactor * 0.5) * (0.6 + coachFactor * 0.4) * fieldModifier * socialModifier)),
       predictedMedal: params.aleknaForm === "Injured" ? "None"
         : params.aleknaForm === "World Record Form" ? "Gold"
         : params.aleknaForm === "Strong" ? "Gold" : "Bronze",
@@ -101,49 +121,49 @@ export function calculateSportPredictions(params: SimParams): SportPrediction[] 
     {
       sport: "Modern Pentathlon",
       icon: "🤺",
-      medalProb: Math.round((params.pentathalonTalent ? 45 : 12) * (0.6 + readinessFactor * 0.4) * (0.6 + coachFactor * 0.4)),
+      medalProb: Math.round((params.pentathalonTalent ? 45 : 12) * (0.6 + readinessFactor * 0.4) * (0.6 + coachFactor * 0.4) * fieldModifier * socialModifier),
       predictedMedal: params.pentathalonTalent ? "Bronze" : "None",
       athlete: params.pentathalonTalent ? "New Talent (TBD)" : "No Qualifier",
     },
     {
       sport: "Rowing (W. Sculls)",
       icon: "🚣",
-      medalProb: Math.round(Math.min(70, 25 + params.rowingDepth * 10) * (0.5 + readinessFactor * 0.5)),
+      medalProb: Math.round(Math.min(70, 25 + params.rowingDepth * 10) * (0.5 + readinessFactor * 0.5) * fieldModifier * socialModifier),
       predictedMedal: params.rowingDepth >= 4 ? "Silver" : params.rowingDepth >= 3 ? "Bronze" : "None",
       athlete: "Viktorija Senkutė",
     },
     {
       sport: "3x3 Basketball",
       icon: "🏀",
-      medalProb: params.basketballQualified ? Math.round(55 * (0.5 + readinessFactor * 0.5)) : 0,
+      medalProb: params.basketballQualified ? Math.round(55 * (0.5 + readinessFactor * 0.5) * fieldModifier * socialModifier) : 0,
       predictedMedal: params.basketballQualified ? "Bronze" : "None",
-      athlete: "Pukelis, Džiaugys, Vingelis, Matulis",
+      athlete: "Pukelis, Džiaugys, Vingelis, Vaitkus",
     },
     {
       sport: "Swimming",
       icon: "🏊",
-      medalProb: Math.round(8 * readinessFactor),
+      medalProb: Math.round(8 * readinessFactor * socialModifier),
       predictedMedal: "None",
       athlete: "Pipeline Athlete",
     },
     {
       sport: "Wrestling",
       icon: "🤼",
-      medalProb: Math.round((params.russiaBan ? 18 : 8) * readinessFactor),
+      medalProb: Math.round((params.russiaBan ? 18 : 8) * readinessFactor * fieldModifier),
       predictedMedal: "None",
       athlete: "Qualifying Athlete",
     },
     {
       sport: "Canoeing",
       icon: "🛶",
-      medalProb: Math.round(12 * readinessFactor * coachFactor),
+      medalProb: Math.round(12 * readinessFactor * coachFactor * fieldModifier),
       predictedMedal: "None",
       athlete: "Development Athlete",
     },
     {
       sport: "Boxing",
       icon: "🥊",
-      medalProb: Math.round(10 * readinessFactor),
+      medalProb: Math.round(10 * readinessFactor * fieldModifier),
       predictedMedal: "None",
       athlete: "Qualifying Athlete",
     },
@@ -175,6 +195,9 @@ const simulationDialogues: Record<string, string[]> = {
   "Medal Optimists": [
     "Alekna's training data shows he's peaking at exactly the right time. This could be a 2+ gold Games for us.",
     "The 3x3 basketball squad has improved dramatically since Paris. I'm seeing silver-level chemistry.",
+    "Lithuania won the 2025 3x3 Europe Cup AND the U23 World Cup — they're the team to beat going into LA.",
+    "Alekna's social media following is growing his endorsement portfolio — that financial stability helps focus.",
+    "Senkutė qualified fastest in her heat at the 2025 World Rowing Championships — she's peaking perfectly.",
     "Government funding increase announced — this changes everything for our rowing program.",
     "Senkutė's split times in training are faster than her Paris bronze performance. She's medal-ready.",
     "The coaching infrastructure from the Alekna family ecosystem is unmatched for discus. Gold is almost certain.",
@@ -186,12 +209,19 @@ const simulationDialogues: Record<string, string[]> = {
     "The swimming pipeline is empty since Meilutytė retired. That's a whole discipline gone.",
     "Doping scrutiny is increasing. Weightlifting results are unreliable for any nation.",
     "Čeh and Ståhl are both capable of beating Alekna on any given day. Discus gold isn't guaranteed.",
+    "The 2025 season showed 5 men throwing 70m+ in one meet — the deepest discus field in history.",
+    "Matthew Denny threw 74.78m in 2025 — just 0.78m off Alekna's world record. The field is closing in.",
+    "Social media pressure during Olympics is crushing — 72% of elite athletes report heightened anxiety under scrutiny.",
+    "809 abusive posts targeted athletes during Paris 2024 alone. That toxic environment degrades performance.",
     "The host country effect will disproportionately hurt small nations. US gains medals we'd otherwise contest.",
     "New pentathlon format introduces massive variance. Our athletes haven't adapted yet.",
     "Historical average is 3.33 medals. Expecting more than 4 ignores regression to the mean.",
   ],
   "Realists": [
     "Base case is 3-4 medals. Alekna is near-certain, 3x3 is probable, rowing is a coin flip.",
+    "Social media is a double-edged sword — endorsement income stabilizes athletes financially, but toxic comments can cause choking under pressure.",
+    "The competitive field matters enormously: in weak years Lithuania gets 5 medals, in strong years just 1-2.",
+    "Alekna's 75.56m world record gives him a 3m+ margin over most rivals, but Denny showed the gap is narrowing.",
     "The Russia/Belarus ban opens 0.5 additional medal slots across our disciplines, statistically.",
     "Coaching quality matters most for small nations. The star coach effect adds 12-15% to medal counts.",
     "LA climate suits discus throwers but challenges our endurance athletes. Net effect is neutral.",
@@ -201,6 +231,8 @@ const simulationDialogues: Record<string, string[]> = {
   ],
   "Wildcards": [
     "What if a 17-year-old Lithuanian swimmer has a breakout season? It happened with Meilutytė.",
+    "A single viral social media moment — like Ilona Maher's 5M followers — could transform Lithuanian Olympic funding overnight.",
+    "3x3 basketball has the youngest, most social-media-savvy audience. Lithuanian players could become huge online.",
     "Russia could be re-admitted. That single change would drop Lithuania by 1 medal on average.",
     "What about a new sport addition? Lithuania has untapped potential in climbing and skateboarding.",
     "Injury during warm-up. Equipment malfunction. Judge error. These are the unknowns we can't model.",

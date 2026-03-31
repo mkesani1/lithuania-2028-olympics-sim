@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Play, Loader2, TrendingUp, Target, Medal } from "lucide-react";
+import { Play, Loader2, TrendingUp, Target, Medal, Swords, Share2 } from "lucide-react";
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
@@ -228,6 +228,46 @@ function ParameterControls() {
             className="w-full"
           />
           <p className="text-xs text-muted-foreground mt-1">US home advantage medal displacement</p>
+        </div>
+
+        {/* Competitive Field Strength */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-medium flex items-center gap-1.5">
+              <Swords className="w-3.5 h-3.5 text-destructive" />
+              Competitive Field Strength
+            </label>
+            <span className="text-sm font-mono text-primary" data-testid="text-competition-value">{params.competitiveFieldStrength}/10</span>
+          </div>
+          <Slider
+            data-testid="slider-competition"
+            value={[params.competitiveFieldStrength]}
+            onValueChange={([v]) => update({ competitiveFieldStrength: v })}
+            min={1} max={10} step={1}
+            className="w-full"
+          />
+          <p className="text-xs text-muted-foreground mt-1">Rival depth — 10 = historically deep field (e.g. 5-man 70m+ discus)</p>
+        </div>
+
+        {/* Social Media Effect */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-medium flex items-center gap-1.5">
+              <Share2 className="w-3.5 h-3.5 text-blue-400" />
+              Social Media Effect
+            </label>
+            <span className={`text-sm font-mono ${params.socialMediaEffect < 0 ? 'text-destructive' : params.socialMediaEffect > 0 ? 'text-green-400' : 'text-muted-foreground'}`} data-testid="text-social-value">
+              {params.socialMediaEffect > 0 ? '+' : ''}{params.socialMediaEffect}
+            </span>
+          </div>
+          <Slider
+            data-testid="slider-social"
+            value={[params.socialMediaEffect]}
+            onValueChange={([v]) => update({ socialMediaEffect: v })}
+            min={-5} max={5} step={1}
+            className="w-full"
+          />
+          <p className="text-xs text-muted-foreground mt-1">Negative = toxic pressure/anxiety. Positive = endorsement motivation/fan energy</p>
         </div>
 
         {/* Simulation Rounds */}

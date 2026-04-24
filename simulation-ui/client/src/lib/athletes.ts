@@ -2,6 +2,8 @@
 export interface Athlete {
   id: string;
   name: string;
+  tier: "Senior" | "Prospect";
+  ageIn2028: number;
   sport: string;
   event: string;
   worldRank: number | null;
@@ -16,6 +18,8 @@ export const athletes: Athlete[] = [
   {
     "id": "alekna-m",
     "name": "Mykolas Alekna",
+    "tier": "Senior",
+    "ageIn2028": 25,
     "sport": "Athletics",
     "event": "Discus Throw (M)",
     "worldRank": 1,
@@ -31,6 +35,8 @@ export const athletes: Athlete[] = [
   {
     "id": "alekna-ma",
     "name": "Martynas Alekna",
+    "tier": "Senior",
+    "ageIn2028": 29,
     "sport": "Athletics",
     "event": "Discus Throw (M)",
     "worldRank": 14,
@@ -45,6 +51,8 @@ export const athletes: Athlete[] = [
   {
     "id": "senkute",
     "name": "Viktorija Senkutė",
+    "tier": "Senior",
+    "ageIn2028": 30,
     "sport": "Rowing",
     "event": "Women's Single Sculls (W1x)",
     "worldRank": 4,
@@ -60,6 +68,8 @@ export const athletes: Athlete[] = [
   {
     "id": "3x3-men",
     "name": "3x3 Men (Pukelis, Džiaugys, Vingelis, Vaitkus)",
+    "tier": "Senior",
+    "ageIn2028": 28,
     "sport": "3x3 Basketball",
     "event": "Men's 3x3",
     "worldRank": 2,
@@ -74,6 +84,8 @@ export const athletes: Athlete[] = [
   {
     "id": "3x3-women",
     "name": "3x3 Women (LTU roster)",
+    "tier": "Senior",
+    "ageIn2028": 27,
     "sport": "3x3 Basketball",
     "event": "Women's 3x3",
     "worldRank": 12,
@@ -88,6 +100,8 @@ export const athletes: Athlete[] = [
   {
     "id": "meilutyte",
     "name": "Rūta Meilutytė",
+    "tier": "Senior",
+    "ageIn2028": 31,
     "sport": "Swimming",
     "event": "50m Breaststroke (W)",
     "worldRank": 3,
@@ -102,6 +116,8 @@ export const athletes: Athlete[] = [
   {
     "id": "teterevkova",
     "name": "Kotryna Teterevkova",
+    "tier": "Senior",
+    "ageIn2028": 26,
     "sport": "Swimming",
     "event": "100m Breaststroke (W)",
     "worldRank": 8,
@@ -116,6 +132,8 @@ export const athletes: Athlete[] = [
   {
     "id": "rapsys",
     "name": "Danas Rapšys",
+    "tier": "Senior",
+    "ageIn2028": 33,
     "sport": "Swimming",
     "event": "200m Freestyle (M)",
     "worldRank": 7,
@@ -130,6 +148,8 @@ export const athletes: Athlete[] = [
   {
     "id": "kalaminskas",
     "name": "Jonas Kalaminskas",
+    "tier": "Senior",
+    "ageIn2028": 28,
     "sport": "Modern Pentathlon",
     "event": "Men's Pentathlon",
     "worldRank": 1,
@@ -144,6 +164,8 @@ export const athletes: Athlete[] = [
   {
     "id": "vagnorius",
     "name": "Paulius Vagnorius",
+    "tier": "Senior",
+    "ageIn2028": 27,
     "sport": "Modern Pentathlon",
     "event": "Men's Pentathlon",
     "worldRank": 19,
@@ -158,6 +180,8 @@ export const athletes: Athlete[] = [
   {
     "id": "jevensaper",
     "name": "Danielius Jevensaper",
+    "tier": "Senior",
+    "ageIn2028": 26,
     "sport": "Modern Pentathlon",
     "event": "Men's Pentathlon",
     "worldRank": 21,
@@ -172,6 +196,8 @@ export const athletes: Athlete[] = [
   {
     "id": "zustautas",
     "name": "Henrikas Žustautas & Vadim Korobov",
+    "tier": "Senior",
+    "ageIn2028": 30,
     "sport": "Canoe Sprint",
     "event": "Men's C-2 500m",
     "worldRank": 6,
@@ -186,6 +212,8 @@ export const athletes: Athlete[] = [
   {
     "id": "benkunskas",
     "name": "Edgaras Benkunskas",
+    "tier": "Senior",
+    "ageIn2028": 29,
     "sport": "Athletics",
     "event": "Decathlon (M)",
     "worldRank": 42,
@@ -200,6 +228,8 @@ export const athletes: Athlete[] = [
   {
     "id": "dudenaite",
     "name": "Miglė Julija Dūdėnaitė",
+    "tier": "Senior",
+    "ageIn2028": 27,
     "sport": "Judo",
     "event": "-78 kg (W)",
     "worldRank": 20,
@@ -214,6 +244,8 @@ export const athletes: Athlete[] = [
   {
     "id": "mikutis",
     "name": "Aivaras Mikutis",
+    "tier": "Senior",
+    "ageIn2028": 26,
     "sport": "Cycling",
     "event": "Men's Road + ITT",
     "worldRank": 774,
@@ -229,6 +261,8 @@ export const athletes: Athlete[] = [
   {
     "id": "boxer-tbd",
     "name": "LTU Boxing Qualifier (TBD)",
+    "tier": "Senior",
+    "ageIn2028": 27,
     "sport": "Boxing",
     "event": "TBD",
     "worldRank": null,
@@ -243,6 +277,8 @@ export const athletes: Athlete[] = [
   {
     "id": "wrestler-tbd",
     "name": "LTU Wrestling Qualifier (TBD)",
+    "tier": "Senior",
+    "ageIn2028": 27,
     "sport": "Wrestling",
     "event": "Greco-Roman TBD",
     "worldRank": null,
@@ -253,5 +289,165 @@ export const athletes: Athlete[] = [
       "https://uww.org/event/senior-world-championships/team-rankings"
     ],
     "notes": "Represented at 2025 Worlds, no podium. Russia/Belarus ban helps slot availability."
+  },
+  {
+    "id": "genys",
+    "name": "Majus Genys",
+    "tier": "Prospect",
+    "ageIn2028": 19,
+    "sport": "Judo",
+    "event": "-90 kg (M)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "EYOF + Cadet Euro double gold",
+    "basePriorPct": 8,
+    "sources": [
+      "https://www.ijf.org/country/ltu/results?year=2025"
+    ],
+    "notes": "GOLD at EYOF Skopje 2025 AND GOLD at Cadet European Championships Skopje 2025 (double gold). Highest-ceiling prospect — realistic 2028 senior qualifier, dark-horse bronze."
+  },
+  {
+    "id": "bieliauskas",
+    "name": "Aleksas Bieliauskas",
+    "tier": "Prospect",
+    "ageIn2028": 20,
+    "sport": "Basketball",
+    "event": "Men's 5x5 (if qualified)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "FIBA U20 EuroBasket 2025 silver",
+    "basePriorPct": 4,
+    "sources": [
+      "https://www.eurohoops.net/en/eurobasket/1849717/eurobasket-u20-2025-final-standings-mvp/"
+    ],
+    "notes": "17 pts / 12 reb double-double in U20 Euro final. Rotation piece if Lithuania 5x5 qualifies alongside NBA-tier Jakučionis/Buzelis/Rubštavičius."
+  },
+  {
+    "id": "miklyciute",
+    "name": "Rugilė Miklyčiūtė",
+    "tier": "Prospect",
+    "ageIn2028": 23,
+    "sport": "Athletics",
+    "event": "Pole Vault (W)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "European U23 silver, NR 4.35m",
+    "basePriorPct": 3,
+    "sources": [
+      "https://en.wikipedia.org/wiki/2025_European_Athletics_U23_Championships"
+    ],
+    "notes": "Silver at 2025 European U23 Championships. Lithuanian NR 4.35m. Needs ~4.70m for LA28; finalist candidate on current trajectory."
+  },
+  {
+    "id": "babaicenko",
+    "name": "Tajus Babaičenko",
+    "tier": "Prospect",
+    "ageIn2028": 19,
+    "sport": "Judo",
+    "event": "-81 kg (M)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "EYOF gold + Cadet World bronze",
+    "basePriorPct": 5,
+    "sources": [
+      "https://www.ijf.org/country/ltu/results?year=2025"
+    ],
+    "notes": "GOLD at EYOF Skopje 2025 + Bronze at Cadet World Championships Sofia 2025. Senior World Cup circuit entry 2026–27."
+  },
+  {
+    "id": "galvydyte",
+    "name": "Gabija Galvydytė",
+    "tier": "Prospect",
+    "ageIn2028": 23,
+    "sport": "Athletics",
+    "event": "800m (W)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "PB 1:57.96, World Champs SF",
+    "basePriorPct": 3,
+    "sources": [
+      "https://worldathletics.org/competitions/world-athletics-championships/tokyo25"
+    ],
+    "notes": "PB 1:57.96 at 2025 Worlds Tokyo. 8th in semifinals. ~0.3s off LA28 qualifying standard."
+  },
+  {
+    "id": "kuciar",
+    "name": "Varvara Kučiar",
+    "tier": "Prospect",
+    "ageIn2028": 22,
+    "sport": "Judo",
+    "event": "-57 kg (W)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "European Junior bronze + Paks Cup gold",
+    "basePriorPct": 3,
+    "sources": [
+      "https://www.ijf.org/country/ltu/results?year=2025"
+    ],
+    "notes": "Bronze at European Junior Championships 2025 + Gold at Paks Junior European Cup. Transitioning to senior circuit 2026."
+  },
+  {
+    "id": "juskeviciute",
+    "name": "Beatrice Juškevičiūtė",
+    "tier": "Prospect",
+    "ageIn2028": 23,
+    "sport": "Athletics",
+    "event": "Heptathlon (W)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "6151 pts, 14th World Champs",
+    "basePriorPct": 2,
+    "sources": [
+      "https://worldathletics.org/competitions/world-athletics-championships/tokyo25"
+    ],
+    "notes": "6,151 pts, 14th at 2025 World Championships Tokyo. Needs ~6,400+ pts for LA28 top-8."
+  },
+  {
+    "id": "vilkas",
+    "name": "Daumantas Vilkas",
+    "tier": "Prospect",
+    "ageIn2028": 20,
+    "sport": "Boxing",
+    "event": "Youth (TBD senior weight)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "European Youth silver",
+    "basePriorPct": 3,
+    "sources": [
+      "https://www.euboxing.org/"
+    ],
+    "notes": "Silver at European Youth Boxing Championship Ostrava 2025. Senior elite transition 2026–27."
+  },
+  {
+    "id": "polikevicius",
+    "name": "Simas Polikevičius",
+    "tier": "Prospect",
+    "ageIn2028": 22,
+    "sport": "Judo",
+    "event": "-66 kg (M)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "European Junior bronze",
+    "basePriorPct": 2,
+    "sources": [
+      "https://www.ijf.org/country/ltu/results?year=2025"
+    ],
+    "notes": "Bronze at European Judo Championships Juniors Bratislava 2025."
+  },
+  {
+    "id": "beniusyte",
+    "name": "Aurėja Beniušytė",
+    "tier": "Prospect",
+    "ageIn2028": 24,
+    "sport": "Athletics",
+    "event": "Triple Jump (W)",
+    "worldRank": null,
+    "qualStatus": "Development",
+    "form": "LTU indoor champion 2025",
+    "basePriorPct": 2,
+    "sources": [
+      "https://worldathletics.org/"
+    ],
+    "notes": "Lithuanian national indoor champion 2025, leading LTU triple jumper. Needs ~14.35m for LA28 standard."
   }
 ];

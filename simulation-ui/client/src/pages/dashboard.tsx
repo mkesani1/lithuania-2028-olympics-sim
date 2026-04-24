@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Play, Loader2, Users, Target, Medal, Swords, Share2 } from "lucide-react";
+import { Play, Loader2, Users, Target, Medal, Swords, Share2, Sprout } from "lucide-react";
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
@@ -270,6 +270,25 @@ function ParameterControls() {
           <p className="text-xs text-muted-foreground mt-1">Negative = toxic pressure/anxiety. Positive = endorsement motivation/fan energy</p>
         </div>
 
+        {/* Youth Development Investment */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-medium flex items-center gap-1.5">
+              <Sprout className="w-3.5 h-3.5 text-green-400" />
+              Youth Development Investment
+            </label>
+            <span className="text-sm font-mono text-primary" data-testid="text-prospect-dev-value">{params.prospectDevelopmentFactor}</span>
+          </div>
+          <Slider
+            data-testid="slider-prospect-dev"
+            value={[params.prospectDevelopmentFactor]}
+            onValueChange={([v]) => update({ prospectDevelopmentFactor: v })}
+            min={0} max={100} step={1}
+            className="w-full"
+          />
+          <p className="text-xs text-muted-foreground mt-1">0 = no pipeline investment, 100 = elite junior-to-senior conversion program</p>
+        </div>
+
         {/* Simulation Rounds */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -327,9 +346,15 @@ const QUAL_COLORS: Record<string, { bg: string; fg: string; border: string }> = 
 
 function AthleteRankings() {
   const { params } = useAppContext();
-  const rankings = useMemo(
-    () => calculateAthleteRankings(params).slice().sort((a, b) => b.medalProb - a.medalProb),
-    [params],
+  const rankings = useMemo(() => calculateAthleteRankings(params), [params]);
+
+  const seniors = useMemo(
+    () => rankings.filter((a) => a.tier === "Senior").slice().sort((a, b) => b.medalProb - a.medalProb),
+    [rankings],
+  );
+  const prospects = useMemo(
+    () => rankings.filter((a) => a.tier === "Prospect").slice().sort((a, b) => b.medalProb - a.medalProb),
+    [rankings],
   );
 
   return (
@@ -342,6 +367,9 @@ function AthleteRankings() {
       </CardHeader>
       <CardContent className="p-0">
         <div className="max-h-[640px] overflow-auto">
+          <div className="px-4 pt-4 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Senior Medal Contenders
+          </div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -357,7 +385,7 @@ function AthleteRankings() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rankings.map((a, i) => {
+              {seniors.map((a, i) => {
                 const qual = QUAL_COLORS[a.qualStatus] ?? QUAL_COLORS.Possible;
                 const medalColor = MEDAL_COLORS[a.predictedMedal];
                 return (
@@ -368,6 +396,73 @@ function AthleteRankings() {
                     </TableCell>
                     <TableCell className="py-2 text-xs text-muted-foreground">{a.sport}</TableCell>
                     <TableCell className="py-2 text-xs text-muted-foreground">{a.event}</TableCell>
+                    <TableCell className="py-2 text-xs font-mono text-right">
+                      {a.worldRank ?? "—"}
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] h-5 px-1.5"
+                        style={{ backgroundColor: qual.bg, color: qual.fg, borderColor: qual.border }}
+                      >
+                        {a.qualStatus}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2 text-xs font-mono text-right tabular-nums">
+                      {a.medalProb}%
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Badge
+                        variant={a.predictedMedal === "None" ? "secondary" : "default"}
+                        className="text-[10px] h-5 px-1.5"
+                        style={{
+                          backgroundColor: a.predictedMedal !== "None" ? medalColor + "22" : undefined,
+                          color: medalColor,
+                          borderColor: medalColor + "44",
+                        }}
+                      >
+                        {a.predictedMedal}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2 text-xs text-muted-foreground">{a.form}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+
+          <div className="px-4 pt-6 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <Sprout className="w-3.5 h-3.5 text-green-400" />
+            Development Prospects
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-10 text-xs">#</TableHead>
+                <TableHead className="text-xs">Athlete</TableHead>
+                <TableHead className="text-xs">Sport</TableHead>
+                <TableHead className="text-xs">Event</TableHead>
+                <TableHead className="text-xs text-right">Age in 2028</TableHead>
+                <TableHead className="text-xs text-right">WR#</TableHead>
+                <TableHead className="text-xs">Qual</TableHead>
+                <TableHead className="text-xs text-right">Prob</TableHead>
+                <TableHead className="text-xs">Medal</TableHead>
+                <TableHead className="text-xs">Form</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {prospects.map((a, i) => {
+                const qual = QUAL_COLORS[a.qualStatus] ?? QUAL_COLORS.Possible;
+                const medalColor = MEDAL_COLORS[a.predictedMedal];
+                return (
+                  <TableRow key={a.id} data-testid={`athlete-row-${a.id}`}>
+                    <TableCell className="font-mono text-xs text-muted-foreground py-2">{i + 1}</TableCell>
+                    <TableCell className="py-2">
+                      <div className="text-xs font-medium">{a.name}</div>
+                    </TableCell>
+                    <TableCell className="py-2 text-xs text-muted-foreground">{a.sport}</TableCell>
+                    <TableCell className="py-2 text-xs text-muted-foreground">{a.event}</TableCell>
+                    <TableCell className="py-2 text-xs font-mono text-right tabular-nums">{a.ageIn2028}</TableCell>
                     <TableCell className="py-2 text-xs font-mono text-right">
                       {a.worldRank ?? "—"}
                     </TableCell>

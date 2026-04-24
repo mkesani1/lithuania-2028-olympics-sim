@@ -15,6 +15,7 @@ export interface SimParams {
   simulationRounds: number;
   competitiveFieldStrength: number; // 1-10: how strong rivals are (10 = toughest year ever)
   socialMediaEffect: number; // -5 to +5: net social media impact (negative = pressure/toxicity, positive = boost/endorsement motivation)
+  prospectDevelopmentFactor: number; // 0-100: how much junior-to-senior conversion investment (youth program funding, senior-circuit exposure). 50 = neutral baseline.
 }
 
 export const defaultParams: SimParams = {
@@ -30,6 +31,7 @@ export const defaultParams: SimParams = {
   simulationRounds: 100,
   competitiveFieldStrength: 7, // 2025 discus field is historically deep (5 men 70m+)
   socialMediaEffect: 1, // Slight net positive: Lithuania athletes have modest social profiles, less toxic exposure
+  prospectDevelopmentFactor: 50,
 };
 
 const INDIVIDUAL_SKILL_SPORTS = new Set([
@@ -75,6 +77,11 @@ export function calculateAthleteRankings(params: SimParams): AthleteMedalPredict
     score *= fieldModifier;
     score *= socialModifier;
 
+    if (a.tier === "Prospect") {
+      const developmentModifier = 0.4 + (params.prospectDevelopmentFactor / 100) * 1.2;
+      score *= developmentModifier;
+    }
+
     if (a.id === "alekna-m") {
       if (params.aleknaForm === "Injured") {
         score = 7;
@@ -94,7 +101,8 @@ export function calculateAthleteRankings(params: SimParams): AthleteMedalPredict
     }
 
     const rawScore = score;
-    const medalProb = Math.round(Math.max(0, Math.min(99, score)));
+    const ceiling = a.tier === "Prospect" ? 20 : 99;
+    const medalProb = Math.round(Math.max(0, Math.min(ceiling, score)));
 
     return {
       ...a,

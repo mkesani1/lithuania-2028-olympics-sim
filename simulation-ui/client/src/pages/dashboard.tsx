@@ -1,13 +1,13 @@
 import { useAppContext } from "@/App";
-import { calculateMedals, calculateConfidenceInterval, calculateSportPredictions, historicalData } from "@/lib/simulation";
+import { calculateMedals, calculateConfidenceInterval, calculateAthleteRankings, historicalData } from "@/lib/simulation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Play, Loader2, TrendingUp, Target, Medal, Swords, Share2 } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Play, Loader2, Users, Target, Medal, Swords, Share2 } from "lucide-react";
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
@@ -311,53 +311,97 @@ function ParameterControls() {
   );
 }
 
-function SportBreakdown() {
-  const { params } = useAppContext();
-  const sports = useMemo(() => calculateSportPredictions(params), [params]);
+const MEDAL_COLORS: Record<string, string> = {
+  Gold: "#FFD700",
+  Silver: "#C0C0C0",
+  Bronze: "#CD7F32",
+  None: "hsl(var(--muted-foreground))",
+};
 
-  const medalColors: Record<string, string> = {
-    Gold: "#FFD700",
-    Silver: "#C0C0C0",
-    Bronze: "#CD7F32",
-    None: "hsl(var(--muted-foreground))",
-  };
+const QUAL_COLORS: Record<string, { bg: string; fg: string; border: string }> = {
+  Lock: { bg: "#22c55e22", fg: "#22c55e", border: "#22c55e44" },
+  Likely: { bg: "#3b82f622", fg: "#3b82f6", border: "#3b82f644" },
+  Possible: { bg: "#f59e0b22", fg: "#f59e0b", border: "#f59e0b44" },
+  Borderline: { bg: "#ef444422", fg: "#ef4444", border: "#ef444444" },
+};
+
+function AthleteRankings() {
+  const { params } = useAppContext();
+  const rankings = useMemo(
+    () => calculateAthleteRankings(params).slice().sort((a, b) => b.medalProb - a.medalProb),
+    [params],
+  );
 
   return (
     <Card className="bg-card border-card-border">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-          <TrendingUp className="w-4 h-4" />
-          Sport-by-Sport Breakdown
+          <Users className="w-4 h-4" />
+          Athlete Medal Rankings
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {sports.map((sport) => (
-            <div key={sport.sport} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30" data-testid={`sport-${sport.sport.toLowerCase().replace(/\s/g, '-')}`}>
-              <span className="text-xl w-8 text-center shrink-0">{sport.icon}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium truncate">{sport.sport}</span>
-                  <Badge
-                    variant={sport.predictedMedal === "None" ? "secondary" : "default"}
-                    className="text-xs shrink-0 ml-2"
-                    style={{
-                      backgroundColor: sport.predictedMedal !== "None" ? medalColors[sport.predictedMedal] + "22" : undefined,
-                      color: medalColors[sport.predictedMedal],
-                      borderColor: medalColors[sport.predictedMedal] + "44",
-                    }}
-                  >
-                    {sport.predictedMedal}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Progress value={sport.medalProb} className="h-1.5 flex-1" />
-                  <span className="text-xs font-mono text-muted-foreground w-10 text-right">{sport.medalProb}%</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1 truncate">{sport.athlete}</p>
-              </div>
-            </div>
-          ))}
+      <CardContent className="p-0">
+        <div className="max-h-[640px] overflow-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-10 text-xs">#</TableHead>
+                <TableHead className="text-xs">Athlete</TableHead>
+                <TableHead className="text-xs">Sport</TableHead>
+                <TableHead className="text-xs">Event</TableHead>
+                <TableHead className="text-xs text-right">WR#</TableHead>
+                <TableHead className="text-xs">Qual</TableHead>
+                <TableHead className="text-xs text-right">Prob</TableHead>
+                <TableHead className="text-xs">Medal</TableHead>
+                <TableHead className="text-xs">Form</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rankings.map((a, i) => {
+                const qual = QUAL_COLORS[a.qualStatus] ?? QUAL_COLORS.Possible;
+                const medalColor = MEDAL_COLORS[a.predictedMedal];
+                return (
+                  <TableRow key={a.id} data-testid={`athlete-row-${a.id}`}>
+                    <TableCell className="font-mono text-xs text-muted-foreground py-2">{i + 1}</TableCell>
+                    <TableCell className="py-2">
+                      <div className="text-xs font-medium">{a.name}</div>
+                    </TableCell>
+                    <TableCell className="py-2 text-xs text-muted-foreground">{a.sport}</TableCell>
+                    <TableCell className="py-2 text-xs text-muted-foreground">{a.event}</TableCell>
+                    <TableCell className="py-2 text-xs font-mono text-right">
+                      {a.worldRank ?? "—"}
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] h-5 px-1.5"
+                        style={{ backgroundColor: qual.bg, color: qual.fg, borderColor: qual.border }}
+                      >
+                        {a.qualStatus}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2 text-xs font-mono text-right tabular-nums">
+                      {a.medalProb}%
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Badge
+                        variant={a.predictedMedal === "None" ? "secondary" : "default"}
+                        className="text-[10px] h-5 px-1.5"
+                        style={{
+                          backgroundColor: a.predictedMedal !== "None" ? medalColor + "22" : undefined,
+                          color: medalColor,
+                          borderColor: medalColor + "44",
+                        }}
+                      >
+                        {a.predictedMedal}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2 text-xs text-muted-foreground">{a.form}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>
@@ -416,10 +460,10 @@ export default function Dashboard() {
       {/* Top: Medal Summary */}
       <MedalSummary predicted={predicted} ci={ci} />
 
-      {/* Main content: Parameters + Sport Breakdown */}
+      {/* Main content: Parameters + Athlete Rankings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ParameterControls />
-        <SportBreakdown />
+        <AthleteRankings />
       </div>
 
       {/* Historical Chart */}

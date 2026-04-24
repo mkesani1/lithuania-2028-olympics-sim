@@ -1,3 +1,7 @@
+import { athletes, type Athlete } from "./athletes";
+
+export type { Athlete };
+
 export interface SimParams {
   athleteReadiness: number;
   governmentFunding: number;
@@ -28,63 +32,95 @@ export const defaultParams: SimParams = {
   socialMediaEffect: 1, // Slight net positive: Lithuania athletes have modest social profiles, less toxic exposure
 };
 
+const INDIVIDUAL_SKILL_SPORTS = new Set([
+  "Athletics",
+  "Rowing",
+  "Modern Pentathlon",
+  "Swimming",
+  "Canoe",
+  "Judo",
+  "Wrestling",
+  "Boxing",
+  "Shooting",
+]);
+
+export interface AthleteMedalPrediction extends Athlete {
+  medalProb: number;
+  predictedMedal: "Gold" | "Silver" | "Bronze" | "None";
+  rawScore: number;
+}
+
+function predictedMedalFor(prob: number): "Gold" | "Silver" | "Bronze" | "None" {
+  if (prob >= 65) return "Gold";
+  if (prob >= 40) return "Silver";
+  if (prob >= 20) return "Bronze";
+  return "None";
+}
+
+export function calculateAthleteRankings(params: SimParams): AthleteMedalPrediction[] {
+  const fieldModifier = 1 - (params.competitiveFieldStrength - 5) * 0.04;
+  const socialModifier = 1 + params.socialMediaEffect * 0.015;
+  const readinessModifier = 0.5 + (params.athleteReadiness / 100) * 0.5;
+  const coachModifier = 0.6 + (params.coachingQuality / 10) * 0.4;
+
+  return athletes.map<AthleteMedalPrediction>((a) => {
+    let score = a.basePriorPct;
+
+    score *= readinessModifier;
+
+    if (INDIVIDUAL_SKILL_SPORTS.has(a.sport)) {
+      score *= coachModifier;
+    }
+
+    score *= fieldModifier;
+    score *= socialModifier;
+
+    if (a.id === "alekna-m") {
+      if (params.aleknaForm === "Injured") {
+        score = 7;
+      } else if (params.aleknaForm === "World Record Form") {
+        score *= 1.1;
+      } else if (params.aleknaForm === "Average") {
+        score *= 0.65;
+      }
+    }
+
+    if (a.sport === "Wrestling" && !params.russiaBan) {
+      score *= 0.5;
+    }
+
+    if (a.sport === "3x3 Basketball" && !params.basketballQualified && a.id === "3x3-men") {
+      score = 0;
+    }
+
+    const rawScore = score;
+    const medalProb = Math.round(Math.max(0, Math.min(99, score)));
+
+    return {
+      ...a,
+      medalProb,
+      predictedMedal: predictedMedalFor(medalProb),
+      rawScore,
+    };
+  });
+}
+
 export function calculateMedals(params: SimParams): number {
-  let medals = 3.33;
+  const rankings = calculateAthleteRankings(params);
+  const expected = rankings.reduce((sum, a) => sum + a.medalProb / 100, 0);
 
-  // Alekna form
-  switch (params.aleknaForm) {
-    case "World Record Form": medals += 1.5; break;
-    case "Strong": medals += 1.0; break;
-    case "Average": medals += 0.3; break;
-    case "Injured": medals -= 1.5; break;
-  }
+  let medals = expected;
 
-  // Russia/Belarus ban
-  if (params.russiaBan) medals += 0.5;
-
-  // Funding effect: logarithmic diminishing returns (Bernard & Busse Cobb-Douglas model)
-  // Lithuania already spends €10.7/capita (€30M) — nearly 2x Slovenia's €7.9/capita
-  // Below €15M: underfunded penalty. €15-25M: sweet spot. Above €25M: diminishing returns.
+  // National-level modifiers (folded in as global adjustments)
   if (params.governmentFunding < 15) {
-    medals -= (15 - params.governmentFunding) * 0.06; // underfunding penalty
+    medals -= (15 - params.governmentFunding) * 0.06;
   } else {
-    // Log curve: first €10M above 15 matters most, then diminishes sharply
     medals += Math.log2(Math.max(1, params.governmentFunding - 14)) * 0.2;
-    // Cap: spending above €35M adds virtually nothing for a 2.8M population
   }
 
-  // Coaching quality > 7
-  if (params.coachingQuality > 7) {
-    medals += (params.coachingQuality - 7) * 0.2;
-  }
-
-  // 3x3 qualified
-  if (params.basketballQualified) medals += 0.7;
-
-  // Pentathlon talent
-  if (params.pentathalonTalent) medals += 0.6;
-
-  // Rowing depth
-  medals += params.rowingDepth * 0.15;
-
-  // Athlete readiness
-  medals += (params.athleteReadiness - 50) * 0.02;
-
-  // Host effect
   medals -= params.hostEffect * 0.05;
 
-  // Competitive field strength: stronger rivals = fewer medals for Lithuania
-  // At field=5 (average), neutral. Below 5 = weaker field (bonus). Above 5 = stronger field (penalty).
-  // Based on head-to-head dynamics: 2025 discus had first-ever 5-man 70m+ competition
-  medals -= (params.competitiveFieldStrength - 5) * 0.15;
-
-  // Social media effect: research shows 72% of elite athletes report heightened anxiety
-  // under media scrutiny (Kristiansen et al.), but endorsement motivation can boost by 2-3%.
-  // Negative = toxic pressure (choking under pressure, Beilock & Carr 2001)
-  // Positive = endorsement motivation + fan energy boost
-  medals += params.socialMediaEffect * 0.08;
-
-  return Math.round(Math.max(0, Math.min(10, medals)));
+  return Math.round(Math.max(0, Math.min(12, medals)));
 }
 
 export function calculateConfidenceInterval(predicted: number): [number, number] {
@@ -101,78 +137,38 @@ export interface SportPrediction {
   athlete: string;
 }
 
+/**
+ * @deprecated Use calculateAthleteRankings. Retained only for the report page's
+ * hardcoded sport indices (discus, pentathlon, rowing, 3x3). Aggregates athletes
+ * by sport using max medalProb as the sport's representative.
+ */
 export function calculateSportPredictions(params: SimParams): SportPrediction[] {
-  // Competitive field modifier: stronger field reduces medal probabilities across all sports
-  const fieldModifier = 1 - ((params.competitiveFieldStrength - 5) * 0.04); // range: 0.8 to 1.2
-  // Social media modifier: positive = confidence boost, negative = choking risk
-  const socialModifier = 1 + (params.socialMediaEffect * 0.015); // range: 0.925 to 1.075
+  const rankings = calculateAthleteRankings(params);
+  const bestBy = (predicate: (a: AthleteMedalPrediction) => boolean): AthleteMedalPrediction | undefined =>
+    rankings.filter(predicate).sort((a, b) => b.medalProb - a.medalProb)[0];
 
-  const aleknaBase = params.aleknaForm === "World Record Form" ? 95
-    : params.aleknaForm === "Strong" ? 85
-    : params.aleknaForm === "Average" ? 55
-    : 10;
-  const readinessFactor = params.athleteReadiness / 100;
-  const coachFactor = params.coachingQuality / 10;
+  const toPrediction = (
+    sport: string,
+    icon: string,
+    a: AthleteMedalPrediction | undefined,
+    fallbackName: string,
+  ): SportPrediction => ({
+    sport,
+    icon,
+    medalProb: a?.medalProb ?? 0,
+    predictedMedal: a?.predictedMedal ?? "None",
+    athlete: a?.name ?? fallbackName,
+  });
 
   return [
-    {
-      sport: "Discus Throw",
-      icon: "🥏",
-      medalProb: Math.min(99, Math.round(aleknaBase * (0.5 + readinessFactor * 0.5) * (0.6 + coachFactor * 0.4) * fieldModifier * socialModifier)),
-      predictedMedal: params.aleknaForm === "Injured" ? "None"
-        : params.aleknaForm === "World Record Form" ? "Gold"
-        : params.aleknaForm === "Strong" ? "Gold" : "Bronze",
-      athlete: "Mykolas Alekna",
-    },
-    {
-      sport: "Modern Pentathlon",
-      icon: "🤺",
-      medalProb: Math.round((params.pentathalonTalent ? 45 : 12) * (0.6 + readinessFactor * 0.4) * (0.6 + coachFactor * 0.4) * fieldModifier * socialModifier),
-      predictedMedal: params.pentathalonTalent ? "Bronze" : "None",
-      athlete: params.pentathalonTalent ? "New Talent (TBD)" : "No Qualifier",
-    },
-    {
-      sport: "Rowing (W. Sculls)",
-      icon: "🚣",
-      medalProb: Math.round(Math.min(70, 25 + params.rowingDepth * 10) * (0.5 + readinessFactor * 0.5) * fieldModifier * socialModifier),
-      predictedMedal: params.rowingDepth >= 4 ? "Silver" : params.rowingDepth >= 3 ? "Bronze" : "None",
-      athlete: "Viktorija Senkutė",
-    },
-    {
-      sport: "3x3 Basketball",
-      icon: "🏀",
-      medalProb: params.basketballQualified ? Math.round(55 * (0.5 + readinessFactor * 0.5) * fieldModifier * socialModifier) : 0,
-      predictedMedal: params.basketballQualified ? "Bronze" : "None",
-      athlete: "Pukelis, Džiaugys, Vingelis, Vaitkus",
-    },
-    {
-      sport: "Swimming",
-      icon: "🏊",
-      medalProb: Math.round(8 * readinessFactor * socialModifier),
-      predictedMedal: "None",
-      athlete: "Pipeline Athlete",
-    },
-    {
-      sport: "Wrestling",
-      icon: "🤼",
-      medalProb: Math.round((params.russiaBan ? 18 : 8) * readinessFactor * fieldModifier),
-      predictedMedal: "None",
-      athlete: "Qualifying Athlete",
-    },
-    {
-      sport: "Canoeing",
-      icon: "🛶",
-      medalProb: Math.round(12 * readinessFactor * coachFactor * fieldModifier),
-      predictedMedal: "None",
-      athlete: "Development Athlete",
-    },
-    {
-      sport: "Boxing",
-      icon: "🥊",
-      medalProb: Math.round(10 * readinessFactor * fieldModifier),
-      predictedMedal: "None",
-      athlete: "Qualifying Athlete",
-    },
+    toPrediction("Discus Throw", "🥏", bestBy((a) => a.sport === "Athletics"), "No Athletics Contender"),
+    toPrediction("Modern Pentathlon", "🤺", bestBy((a) => a.sport === "Modern Pentathlon"), "No Pentathlete"),
+    toPrediction("Rowing", "🚣", bestBy((a) => a.sport === "Rowing"), "No Rower"),
+    toPrediction("3x3 Basketball", "🏀", bestBy((a) => a.sport === "3x3 Basketball"), "No Team"),
+    toPrediction("Swimming", "🏊", bestBy((a) => a.sport === "Swimming"), "No Swimmer"),
+    toPrediction("Wrestling", "🤼", bestBy((a) => a.sport === "Wrestling"), "No Wrestler"),
+    toPrediction("Canoeing", "🛶", bestBy((a) => a.sport === "Canoe"), "No Canoer"),
+    toPrediction("Boxing", "🥊", bestBy((a) => a.sport === "Boxing"), "No Boxer"),
   ];
 }
 

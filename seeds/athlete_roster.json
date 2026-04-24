@@ -1,0 +1,244 @@
+{
+  "roster": [
+    {
+      "id": "alekna-m",
+      "name": "Mykolas Alekna",
+      "sport": "Athletics",
+      "event": "Discus Throw (M)",
+      "worldRank": 1,
+      "qualStatus": "Lock",
+      "form": "World Record Form",
+      "basePriorPct": 85,
+      "sources": [
+        "https://worldathletics.org/records/toplists/throws/discus-throw/all/men/senior/2025",
+        "https://en.wikipedia.org/wiki/Mykolas_Alekna"
+      ],
+      "notes": "World record holder 75.56m (Apr 2025). 2024 Paris silver. Son of 2x Olympic champion Virgilijus Alekna."
+    },
+    {
+      "id": "gudzineviciute-g",
+      "name": "Gabrielė Gudžineviciūtė",
+      "sport": "Athletics",
+      "event": "Discus Throw (W)",
+      "worldRank": 14,
+      "qualStatus": "Likely",
+      "form": "Strong",
+      "basePriorPct": 22,
+      "sources": [
+        "https://worldathletics.org/athletes/lithuania"
+      ],
+      "notes": "Emerging women's discus thrower in the Alekna training ecosystem."
+    },
+    {
+      "id": "senkute-v",
+      "name": "Viktorija Senkutė",
+      "sport": "Rowing",
+      "event": "Women's Single Sculls",
+      "worldRank": 3,
+      "qualStatus": "Lock",
+      "form": "Strong",
+      "basePriorPct": 55,
+      "sources": [
+        "https://jrn.news/2025-world-rowing-championship-day-two-review/",
+        "https://en.wikipedia.org/wiki/Viktorija_Senkut%C4%97"
+      ],
+      "notes": "2024 Paris bronze. Qualified fastest in heat at 2025 World Rowing Championships."
+    },
+    {
+      "id": "adomaviciute-d",
+      "name": "Dovilė Adomavičiūtė",
+      "sport": "Rowing",
+      "event": "Women's Double Sculls",
+      "worldRank": 8,
+      "qualStatus": "Likely",
+      "form": "Strong",
+      "basePriorPct": 30,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rowing_at_the_Summer_Olympics"
+      ],
+      "notes": "Kaunas rowing center product; strong development pipeline."
+    },
+    {
+      "id": "griskonis-m",
+      "name": "Mindaugas Griškonis",
+      "sport": "Rowing",
+      "event": "Men's Double Sculls",
+      "worldRank": 12,
+      "qualStatus": "Possible",
+      "form": "Average",
+      "basePriorPct": 18,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mindaugas_Gri%C5%A1konis"
+      ],
+      "notes": "2016 Rio silver in double sculls. Veteran presence."
+    },
+    {
+      "id": "3x3-men",
+      "name": "3x3 Men (Pukelis, Džiaugys, Vingelis, Vaitkus)",
+      "sport": "3x3 Basketball",
+      "event": "Men's 3x3",
+      "worldRank": 1,
+      "qualStatus": "Likely",
+      "form": "World Record Form",
+      "basePriorPct": 55,
+      "sources": [
+        "https://about.fiba.basketball/en/news/lithuania-and-the-netherlands-win-the-fiba-3x3-europe-cup-2025"
+      ],
+      "notes": "2024 Paris bronze. Won 2025 FIBA 3x3 Europe Cup AND U23 World Cup, beating Serbia in both finals."
+    },
+    {
+      "id": "pentathlon-w",
+      "name": "Gintarė Venčkauskaitė-Juškienė",
+      "sport": "Modern Pentathlon",
+      "event": "Women's Pentathlon",
+      "worldRank": 22,
+      "qualStatus": "Possible",
+      "form": "Average",
+      "basePriorPct": 15,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Modern_pentathlon_at_the_Summer_Olympics"
+      ],
+      "notes": "Next-gen pentathlete. New 90-min 'Pentathlon Stadium' format adds uncertainty."
+    },
+    {
+      "id": "pentathlon-m",
+      "name": "Justinas Kinderis",
+      "sport": "Modern Pentathlon",
+      "event": "Men's Pentathlon",
+      "worldRank": 28,
+      "qualStatus": "Borderline",
+      "form": "Average",
+      "basePriorPct": 8,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Justinas_Kinderis"
+      ],
+      "notes": "Veteran pentathlete. Longshot medal contender under new format."
+    },
+    {
+      "id": "swim-w",
+      "name": "Kotryna Teterevkova",
+      "sport": "Swimming",
+      "event": "Women's 200m Breaststroke",
+      "worldRank": 18,
+      "qualStatus": "Likely",
+      "form": "Strong",
+      "basePriorPct": 10,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kotryna_Teterevkova"
+      ],
+      "notes": "Top Lithuanian swimmer post-Meilutytė retirement. NCAA-trained."
+    },
+    {
+      "id": "swim-m",
+      "name": "Danas Rapšys",
+      "sport": "Swimming",
+      "event": "Men's 200m Freestyle",
+      "worldRank": 16,
+      "qualStatus": "Possible",
+      "form": "Average",
+      "basePriorPct": 8,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Danas_Rap%C5%A1ys"
+      ],
+      "notes": "Former world champion (2018 SC). Fighting for comeback to 2028 level."
+    },
+    {
+      "id": "canoe-m",
+      "name": "Henrikas Žustautas",
+      "sport": "Canoe",
+      "event": "Men's C-1 1000m",
+      "worldRank": 7,
+      "qualStatus": "Likely",
+      "form": "Strong",
+      "basePriorPct": 20,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Henrikas_%C5%BDustautas"
+      ],
+      "notes": "Strong canoe sprint prospect in single canoe."
+    },
+    {
+      "id": "judo-w",
+      "name": "Sandra Jablonskytė",
+      "sport": "Judo",
+      "event": "Women's +78kg",
+      "worldRank": 11,
+      "qualStatus": "Likely",
+      "form": "Strong",
+      "basePriorPct": 15,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sandra_Jablonskyt%C4%97"
+      ],
+      "notes": "Consistent top-16 judoka."
+    },
+    {
+      "id": "wrestle-m",
+      "name": "Edgaras Venckaitis",
+      "sport": "Wrestling",
+      "event": "Men's Greco-Roman 77kg",
+      "worldRank": 9,
+      "qualStatus": "Likely",
+      "form": "Strong",
+      "basePriorPct": 18,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Wrestling_at_the_Summer_Olympics"
+      ],
+      "notes": "Greco-Roman 77kg contender. Russia ban opens medal slots."
+    },
+    {
+      "id": "wrestle-w",
+      "name": "Danutė Domikaitytė",
+      "sport": "Wrestling",
+      "event": "Women's Freestyle 68kg",
+      "worldRank": 15,
+      "qualStatus": "Possible",
+      "form": "Average",
+      "basePriorPct": 10,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Wrestling_at_the_Summer_Olympics"
+      ],
+      "notes": "Emerging freestyle wrestler. Russia/Belarus ban materially affects medal odds."
+    },
+    {
+      "id": "boxing-m",
+      "name": "Eimantas Stanionis",
+      "sport": "Boxing",
+      "event": "Men's Welterweight",
+      "worldRank": 6,
+      "qualStatus": "Likely",
+      "form": "Strong",
+      "basePriorPct": 20,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Eimantas_Stanionis"
+      ],
+      "notes": "Former WBA welterweight champion exploring Olympic return."
+    },
+    {
+      "id": "shoot-w",
+      "name": "Deimantė Rimkutė",
+      "sport": "Shooting",
+      "event": "Women's 10m Air Rifle",
+      "worldRank": 19,
+      "qualStatus": "Possible",
+      "form": "Average",
+      "basePriorPct": 9,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Shooting_at_the_Summer_Olympics"
+      ],
+      "notes": "Lithuania historic gold (Gudzinevičiūtė 2000) set high bar."
+    },
+    {
+      "id": "cycling-m",
+      "name": "Evaldas Šiškevičius",
+      "sport": "Cycling",
+      "event": "Men's Road Race",
+      "worldRank": 42,
+      "qualStatus": "Borderline",
+      "form": "Average",
+      "basePriorPct": 5,
+      "sources": [
+        "https://en.wikipedia.org/wiki/Evaldas_%C5%A0i%C5%A1kevi%C4%8Dius"
+      ],
+      "notes": "Longshot road racer. Cycling road races are highly stochastic."
+    }
+  ]
+}
